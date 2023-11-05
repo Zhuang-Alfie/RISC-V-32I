@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05.11.2023 14:25:47
-// Design Name: 
-// Module Name: Extend
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module Extend(
     input [31:0] inst,
@@ -37,6 +17,7 @@ module Extend(
     // U = { {1{inst[31]}},  inst[30:20], inst[19:12],                                      12'b0 };
     // J = { {12{inst[31]}},              inst[19:12], inst[20], inst[30:25], inst[24:21],  1'b0  };
     
+    // reference : Reference/ImmSrc_encoding.png
     always_comb begin
         Imm_ext = 32'b0;
         case(Imm_src)

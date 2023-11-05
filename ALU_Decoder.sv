@@ -1,24 +1,6 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05.11.2023 15:59:30
-// Design Name: 
-// Module Name: ALU_Decoder
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
+// structure in Reference/ALU_Decoder_truth_table.png
 
 module ALU_Decoder(
     input [2:0] funct3,     // func3[2:0]
