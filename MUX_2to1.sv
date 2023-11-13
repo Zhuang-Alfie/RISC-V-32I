@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 
 module MUX_2to1(
-    input [31:0] PC_target,
-    input [31:0] PC_plus4,
-    input PC_src,
+    input [31:0]  A,
+    input [31:0] B,
+    input select,
     
-    output [31:0] PC_next
+    output [31:0] out
     );
     
-    assign PC_next = PC_src? PC_plus4 : PC_target;
+    assign out = select? B : A;
     
 endmodule
