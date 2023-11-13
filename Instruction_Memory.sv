@@ -5,7 +5,7 @@ module Instruction_Memory(
     output logic [31:0] RD
     );
     
-    logic [31:0] memory [0:31]; 
+    logic [31:0] memory [63:0]; 
     
     
     assign RD = memory[A];

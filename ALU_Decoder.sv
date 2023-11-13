@@ -35,10 +35,8 @@ module ALU_Decoder(
     
     always_comb begin
         case({op[5],funct3})
-            2'b00 : middle1 = 3'b000;           // and
-            2'b01 : middle1 = 3'b000;           // and
-            2'b10 : middle1 = 3'b000;           // and
-            2'b11 : middle1 = 3'b001;           // sub
+            2'b00, 2'b01, 2'b10 : middle1 = 3'b000;     // and
+            2'b11 : middle1 = 3'b001;                   // sub
             default : middle1 = 3'bx;
         endcase
     end
