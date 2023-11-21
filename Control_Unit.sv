@@ -21,8 +21,8 @@ module Control_Unit(
     
     assign PC_src = (zero & branch) | jump;
     
-    ALU_Decoder alu_de (.funct3(instr[14:12]), .funct7(instr[30]), .op(instr[6:0]), .ALU_op(ALU_op), .ALU_control(ALU_control));
+    ALU_Decoder alu_de (.funct3(instr[14:12]), .funct7(instr[30]), .op5(instr[5]), .ALU_op(ALU_op), .ALU_control(ALU_control));
     
-    Main_Decoder main_de(.op5(instr[5]), .Reg_write(Reg_write), .Imm_src(Imm_src), .ALU_src(ALU_src), .Mem_Write(Mem_Write), .Result_src(Result_src), .Branch(branch), .ALU_op(ALU_op), .Jump(jump));
+    Main_Decoder main_de(.op(instr[6:0]), .Reg_write(Reg_write), .Imm_src(Imm_src), .ALU_src(ALU_src), .Mem_Write(Mem_Write), .Result_src(Result_src), .Branch(branch), .ALU_op(ALU_op), .Jump(jump));
     
 endmodule
