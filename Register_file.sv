@@ -14,20 +14,21 @@ module Register_file(
     );
     
     // register with 32 * 32-bit storage
-    logic [31:0] register [0:31];
+    logic [31:0] register [31:0];
     
     // assign result from register
     assign RD1 = register[A1];
     assign RD2 = register[A2];
-    
-    // TODO : Question 1
-    // register x0 is ZERO
-    assign register[0] = 32'b0;
-//    initial register[0] = 32'b0;
+
+    initial begin
+        for (int i=0; i < 32; i++)
+            register[i] = 'b0;
+    end    
 
     // write port for rd
     always_ff @(posedge clk)
         if (WE3)
+            // Prevent modefing Address 0
             if (A3 != 5'b0) register[A3] <= WD3;
     
 endmodule
