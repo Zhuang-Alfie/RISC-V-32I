@@ -1,4 +1,6 @@
-module Top;
+module Top(
+    input bit clk
+);
 
     wire [31:0] instr;
     
@@ -8,11 +10,9 @@ module Top;
     
     wire [31:0] Imm_ext, RD1, RD2, out, ALUResult, RD_DM, Result_mux3_1, result_PC_plus4, result_PC_target, out_mux2_1;
 
-    reg clk;
     reg [31:0] PC_next, PC;
     reg [31:0] constant_4;
     
-    always  #5 clk = ~clk;
     assign PC_next = out_mux2_1;
     
     // Flip-flop generate next PC
@@ -21,7 +21,6 @@ module Top;
     
     initial begin
         constant_4 = 'b100;     // assign to constant 4
-        clk = 0;        // initial clock
         PC = 0;
     end
 

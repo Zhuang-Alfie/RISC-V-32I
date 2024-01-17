@@ -1,8 +1,17 @@
+`timescale 1ns / 1ps
+
 module Top_tb;
 
-    Top dut();
+    reg clk;
+
+    Top dut(.clk(clk));
     
-    initial #800 $finish;
+    always #10 clk = !clk;
+    
+    initial begin 
+        clk = 0;
+        #8000 $finish;
+    end
     
 
 endmodule

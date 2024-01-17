@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module Register_file(
    input [4:0] A1,      // address 1 - instr[19:15]
    input [4:0] A2,      // address 2 - instr[24:20]
@@ -15,20 +13,21 @@ module Register_file(
     
     // register with 32 * 32-bit storage
     logic [31:0] register [31:0];
-    
-    // assign result from register
-    assign RD1 = register[A1];
-    assign RD2 = register[A2];
 
+    // initial block with empry memory
     initial begin
         for (int i=0; i < 32; i++)
             register[i] = 'b0;
     end    
 
-    // write port for rd
-    always_ff @(posedge clk)
+    assign RD1 = register[A1];
+    assign RD2 = register[A2];
+
+    // write port for rd; Synchronous write, synchronous read.
+    always_ff @(posedge clk) begin
         if (WE3)
-            // Prevent modefing Address 0
+            // prevent writting to saved address 0x00;
             if (A3 != 5'b0) register[A3] <= WD3;
+    end
     
 endmodule

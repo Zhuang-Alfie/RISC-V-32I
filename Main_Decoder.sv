@@ -21,6 +21,7 @@ module Main_Decoder(
             7'b1100011 : {Reg_write,Imm_src,ALU_src,Mem_Write,Result_src,Branch,ALU_op,Jump} = 11'b0_10_0_0_xx_1_01_0;      // beq
             7'b0010011 : {Reg_write,Imm_src,ALU_src,Mem_Write,Result_src,Branch,ALU_op,Jump} = 11'b1_00_1_0_00_0_10_0;      // I-type ALU
             7'b1101111 : {Reg_write,Imm_src,ALU_src,Mem_Write,Result_src,Branch,ALU_op,Jump} = 11'b1_11_x_0_10_0_xx_1;      // jal
+            default : {Reg_write,Imm_src,ALU_src,Mem_Write,Result_src,Branch,ALU_op,Jump} = 11'bx;
         endcase
     end
     

@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module MUX_3to1(
     input [31:0] ALU_result,
     input [31:0] Read_data,

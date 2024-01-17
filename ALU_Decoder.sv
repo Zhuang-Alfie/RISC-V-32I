@@ -1,7 +1,3 @@
-`timescale 1ns / 1ps
-
-// structure in Reference/ALU_Decoder_truth_table.png
-
 module ALU_Decoder(
     input [2:0] funct3,     // func3[2:0]
     input funct7,            // func7[5]
@@ -17,8 +13,8 @@ module ALU_Decoder(
             2'b01 : ALU_control = 3'b001;       // beq
             2'b10 : case(funct3)
                         3'b000 : case({op5,funct7})
-                                    2'b00, 2'b01, 2'b10 : ALU_control = 3'b000;  // add
-                                    2'b11 : ALU_control = 3'b001;           // sub
+                                    2'b00, 2'b01, 2'b10 : ALU_control = 3'b000;     // add
+                                    2'b11 : ALU_control = 3'b001;                   // sub
                                     default : ALU_control = 3'bx;
                                  endcase
                         3'b010 : ALU_control = 3'b101;          // slt

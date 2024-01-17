@@ -1,7 +1,3 @@
-`timescale 1ns / 1ps
-
-// structure in Reference/Enhence_control_unit(jal).png
-
 module Control_Unit(
     input [31:0] instr,
     input zero,
