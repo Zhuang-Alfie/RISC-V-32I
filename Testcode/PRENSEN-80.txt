@@ -8,12 +8,32 @@ xor a0, a0, a2  ; a0 now contains the result of STATE_HI XOR KEY_HI
 xor a1, a1, a3  ; a1 now contains the result of STATE_LO XOR KEY_LO
 
 main:
-    li t0, 0               # t0: loop counter initialized to 0
-    li t1, 8               # t1: total number of nibbles in a 32-bit register
-    addi t6, zero, 0x20    # t6: s-box base address 0x20
-    sw 0xC, 0(t6)
-        ...
-    sw 0xF, 64(t6)
+0x00000293    addi t0, zero, 0               # t0: loop counter initialized to 0
+0x00800313    addi t1, zero, 8               # t1: total number of nibbles in a 32-bit register
+0x00000f93    addi t6, zero, 0    	   # t6: s-box base address 0x20
+
+	addi t2, zero, 0
+	sb t6, 0xC(t2)	           # This section can be store in the RAM advance
+	addi t2, zero, 4
+	sb t6, 0x5(t2)
+	
+
+
+    sb 0x5, 4(t6)
+    sb 0x6, 8(t6)
+    sb 0xB, 12(t6)
+    sb 0x9, 16(t6)
+    sb 0x0, 20(t6)
+    sb 0xA, 24(t6)
+    sb 0xD, 28(t6)
+    sb 0x3, 32(t6)
+    sb 0xE, 36(t6)
+    sb 0xF, 40(t6)
+    sb 0x8, 44(t6)
+    sb 0x4, 48(t6)
+    sb 0x7, 52(t6)
+    sb 0x1, 56(t6)
+    sb 0x2, 60(t6)
 
 loop:
     # Shift right to bring the current nibble to the least significant position
