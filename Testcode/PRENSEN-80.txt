@@ -1,0 +1,37 @@
+; Assume STATE_HI is in register a0, STATE_LO in a1
+; Assume KEY_HI is in register a2, KEY_LO in a3
+
+; XOR high 32 bits of STATE with high 32 bits of round key
+xor a0, a0, a2  ; a0 now contains the result of STATE_HI XOR KEY_HI
+
+; XOR low 32 bits of STATE with low 32 bits of round key
+xor a1, a1, a3  ; a1 now contains the result of STATE_LO XOR KEY_LO
+
+main:
+    li t0, 0               # t0: loop counter initialized to 0
+    li t1, 8               # t1: total number of nibbles in a 32-bit register
+    addi t6, zero, 0x20    # t6: s-box base address 0x20
+    sw 0xC, 0(t6)
+        ...
+    sw 0xF, 64(t6)
+
+loop:
+    # Shift right to bring the current nibble to the least significant position
+    srl t2, a0, t0         # t2: holds the current nibble
+    andi t2, t2, 0xF       # Isolate the current nibble
+
+    # Apply S-box
+    add t6, t6, t2         # t6: address of the S-box entry for the current nibble
+    lbu t2, 0(t6)          # t2: S-box substitution for the current nibble
+
+    # Clear the current nibble in a0 and insert the substituted nibble
+    sll t4, t2, t0         # Align the substituted nibble back to its original position
+    li t5, 0xF             # t5: nibble mask
+    sll t5, t5, t0         # Align the mask
+    not t5, t5             # Invert the mask
+    and a0, a0, t5         # Clear the nibble in a0
+    or a0, a0, t4          # Insert the substituted nibble
+
+    # Update the loop counter
+    addi t0, t0, 4         # Move to the next nibble
+    blt t0, t1, loop       # Continue looping if t0 < 8
