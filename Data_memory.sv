@@ -1,9 +1,20 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Data_memory
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description: The Data Memory component serves as the primary storage area for data 
+//              used and produced by the program being executed.
+//////////////////////////////////////////////////////////////////////////////////
+
 module Data_memory(
-    input [31:0] A,
-    input [31:0] WD,
+    input [31:0] A,         // Reading address
+    input [31:0] WD,        // Writing address
     input clk,
-    input WE,
-    output logic [31:0] RD 
+    input WE,               // Writing enable
+    output logic [31:0] RD  // Reading data
     );
     
     logic [31:0] RAM [100:0];
@@ -13,12 +24,6 @@ module Data_memory(
     //Synchronous write, synchronous read
     always_ff @(posedge clk) begin
         if(WE) RAM[A[31:2]] <= WD;
-    end
-    
-    // Initial block with empty memory    
-    initial begin
-        for (int i=0; i < 101; i++)
-            RAM[i] <= 0;
     end
 
 endmodule

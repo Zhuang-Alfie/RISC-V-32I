@@ -1,3 +1,17 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Main_Decoder
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description: This component is essential for the functioning of the processor, as it 
+//              translates the binary instruction codes into a set of actionable commands 
+//              that control the data path and the operation of the processor's various 
+//              elements, such as the ALU, multiplexers, register file, and memory access units.
+//////////////////////////////////////////////////////////////////////////////////
+
+
 module Main_Decoder(
     input [6:0] op,
     

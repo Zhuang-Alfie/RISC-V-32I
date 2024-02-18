@@ -1,6 +1,16 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Register_file
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description:  Register_file is the central hub for fast data storage and access during instruction execution
+//////////////////////////////////////////////////////////////////////////////////
+
 module Register_file(
-   input [4:0] A1,      // address 1 - instr[19:15]
-   input [4:0] A2,      // address 2 - instr[24:20]
+   input [4:0] A1,      // address 1        - instr[19:15]
+   input [4:0] A2,      // address 2        - instr[24:20]
    input [4:0] A3,      // write data input - instr[11:7]
    input [31:0] WD3,
    
@@ -16,8 +26,11 @@ module Register_file(
 
     // initial block with empry memory
     initial begin
-        for (int i=0; i < 32; i++)
+        for (int i=0; i < 32; i++) begin
             register[i] = 'b0;
+            if (i == 10) register[i] = 'h1234;      // TO-DO temp testing data assignment
+            if (i == 0) register[i] = 'b0;
+        end
     end    
 
     assign RD1 = register[A1];

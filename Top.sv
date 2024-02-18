@@ -1,3 +1,13 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Top
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description: This module is the top level of all the modules.
+//////////////////////////////////////////////////////////////////////////////////
+
 module Top(
     input bit clk
 );
@@ -20,20 +30,20 @@ module Top(
         PC <= PC_next;
     
     initial begin
-        constant_4 = 'b100;     // assign to constant 4
+        constant_4 = 'b100;     // assign to constant = 4
         PC = 0;
     end
 
     MUX_2to1 mux2_1 (
-        .A(result_PC_plus4),        // 32-bit
-        .B(result_PC_target),       // 32-bit
+        .A(result_PC_plus4),
+        .B(result_PC_target),
         .select(PC_src),
-        .out(out_mux2_1)               // 32-bit
+        .out(out_mux2_1)
     );
     
     Instruction_Memory inst_memory(
-        .A(PC),             // 32-bit
-        .RD(instr)          // 32-bit
+        .A(PC),
+        .RD(instr)
     );
     
     Adder PC_plus4 (
@@ -54,15 +64,15 @@ module Top(
     );
     
     Control_Unit control_unit(
-        .instr(instr),              // 32-bit
+        .instr(instr),
         .zero(zero), 
         .PC_src(PC_src), 
         .Reg_write(Reg_write),
-        .Imm_src(Imm_src),          // 2-bit
+        .Imm_src(Imm_src),
         .ALU_src(ALU_src),
-        .ALU_control(ALU_control),  // 3-bit
+        .ALU_control(ALU_control),
         .Mem_Write(Mem_Write),
-        .Result_src(Result_src)     // 2-bit
+        .Result_src(Result_src)
     );
     
     Extend extend (
@@ -72,10 +82,10 @@ module Top(
     );
     
     MUX_2to1 mux2_2 (
-        .A(RD2),            // 32-bit
-        .B(Imm_ext),        // 32-bit
+        .A(RD2),
+        .B(Imm_ext),
         .select(ALU_src),
-        .out(out)           // 32-bit
+        .out(out)
     );
     
     ALU alu (

@@ -1,0 +1,55 @@
+## addRoundKey ##
+# a0 - upper 16 bits plant text
+# a1 - lower 16 bits plant text
+# a2 - lower 16 bits key
+# a3 - lower 16 bits key
+
+## sBoxLayer ##
+# a0 - upper 16 bits plant text
+# a1 - lower 16 bits plant text
+
+# t0 - upper 16 bits encrypted text
+# t1 - lower 16 bits encrypted text
+
+# t2 - current nibble holder
+# t3 - total bits in a 16-bit register
+# t4 - bit counter
+# t6 - s-box base address 0x0
+
+## pLayer ##
+# a0 - upper 16 bits plant text
+# a1 - lower 16 bits plant text
+
+# t0 - upper 16 bits encrypted text
+# t1 - lower 16 bits encrypted text
+
+# t2 - current nibble holder
+# t3 - total bits need to convert
+# t4 - bit counter
+# t6 - pLayer RAM base address 0x0
+
+main:
+	xor a0, a0, a2  				# a0 now contains the result of STATE_HI XOR KEY_HI
+	xor a1, a1, a3  				# a1 now contains the result of STATE_LO XOR KEY_LO
+
+	0x02000e13	addi t3, zero, 32               # t3: total bits need to convert
+	0x00000e93    	addi t4, zero, 0               	# t4: bit counter initialized to 0
+	0x00000f93    	addi t6, zero, 0    	   	# t6: s-box base address 0x0
+	0x04002503	lw a0, 64(zero)			****TEMP****Loading a0 to 0x12345678
+
+loop:	0x03de4463	blt t3, t4, 40			# Jump to the end if t3 < t4
+    							# Shift right to bring the current nibble to the least significant position
+    	0x01d553b3 	srl t2, a0, t4         		# t2: holds the current nibble
+    	0x00f3f393 	andi t2, t2, 0xF       		# Isolate the current nibble
+
+    							* Apply S-box
+	0x00239f93	slli t6, t2, 2			# t6: multiply 4 for lw instruction
+    	0x000fa383 	lw t2, 0(t6)           		# t2: S-box substitution for the current nibble
+
+    							* Store new nibble in t0/t1 at correspond position base on loop counter
+	0x01d393b3	sll t2, t2, t4			# t2: shifted nibble to correspond position
+	0x0053e2b3	or t0, t2, t0			# t0: merge new nibble to current encryped text
+	
+    	0x004e8e93 	addi t4, t4, 4         		# t4: Update the bit counter
+    	0xfddff06f 	jal zero,-36       		# Jump back to blt instruction(loop)
+	0x00000013	addi zero, zero, 0		# Nop

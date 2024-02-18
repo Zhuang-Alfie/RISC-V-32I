@@ -1,3 +1,16 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Control_Unit
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description: This module contains and connects two sub-modules which are ALU decoder and main decoder.
+//              It allocated the Instruction data to those two modules, generate result to further control
+//              other modules such as ALU, PC_src etc base on the instruction.
+//              More details of those modules can be seen in the their description
+//////////////////////////////////////////////////////////////////////////////////
+
 module Control_Unit(
     input [31:0] instr,
     input zero,

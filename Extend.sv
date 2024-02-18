@@ -1,3 +1,15 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// University: Dublin City University 
+// Supervisor: Xiaojun Wang
+// Student Name: Zhuang Miao 
+// Module Name: Extend
+// Project Name: Implementation and Performance Analysis of the RSIC-V RV32I Architecture
+// Description: The immediate value extender is a key component in a RISC-V RV32I based 
+//              single-cycle processor, ensuring that immediate values embedded within 
+//              instructions are correctly sign-extended to 32 bits.
+//////////////////////////////////////////////////////////////////////////////////
+
 module Extend(
     input [31:0] inst,
     
