@@ -22,7 +22,11 @@ module ALU_Decoder(
     always_comb begin
         case(ALU_op)
             2'b00 : ALU_control = 3'b000;       // lw, sw
-            2'b01 : ALU_control = 3'b001;       // beq
+            2'b01 : case(funct3)
+                        3'b000 :  ALU_control = 3'b001;       // beq
+                        3'b100 :  ALU_control = 3'b101;       // blt
+                        default : ALU_control = 3'bx;
+                    endcase
             2'b10 : case(funct3)
                         3'b000 : case({op5,funct7})
                                     2'b00, 2'b01, 2'b10 : ALU_control = 3'b000;     // add
@@ -34,6 +38,7 @@ module ALU_Decoder(
                         3'b111 : ALU_control = 3'b010;          // and
                         3'b101 : ALU_control = 3'b110;          // srl
                         3'b001 : ALU_control = 3'b100;          // sll
+                        3'b100 : ALU_control = 3'b111;          // sll
                         default : ALU_control = 3'bx;
                     endcase
             default : ALU_control = 3'bx;

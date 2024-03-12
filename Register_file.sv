@@ -28,7 +28,6 @@ module Register_file(
     initial begin
         for (int i=0; i < 32; i++) begin
             register[i] = 'b0;
-            if (i == 10) register[i] = 'h1234;      // TO-DO temp testing data assignment
             if (i == 0) register[i] = 'b0;
         end
     end    

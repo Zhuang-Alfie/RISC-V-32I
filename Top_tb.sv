@@ -27,7 +27,6 @@ module Top_tb;
 //        $readmemh("loop_test.mem", dut.inst_memory.memory);
         $readmemh("SimpleTest.mem", dut.inst_memory.memory);
 
-        #1710 $finish;  // Force finishing test
     end
 
     always @(negedge clk) begin

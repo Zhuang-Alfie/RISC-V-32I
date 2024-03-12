@@ -32,8 +32,9 @@ module ALU(
             3'b010: ALUResult = srcA & srcB;           // and           - (and)
             3'b011: ALUResult = srcA | srcB;           // or            - (or)
             3'b100: ALUResult = srcA << srcB[4:0];     // sll           - (sll)
-            3'b110: ALUResult = srcA >> srcB[4:0];     // srl           - (srl)
             3'b101: ALUResult = {31'b0, srcA < srcB};  // bit operation - (slt)
+            3'b110: ALUResult = srcA >> srcB[4:0];     // srl           - (srl)
+            3'b111: ALUResult = srcA ^ srcB;           // xor           - (xor)
             default: ALUResult = 32'b0;
         endcase
     end        

@@ -14,7 +14,7 @@ module Instruction_Memory(
     output logic [31:0] RD      // 32-bit binary instruction
     );
     
-    logic [31:0] memory [63:0]; 
+    logic [31:0] memory [100:0]; 
     
     // Resize A to satisfiy when the address is increasing by "1"
     assign RD = memory[A[31:2]];
