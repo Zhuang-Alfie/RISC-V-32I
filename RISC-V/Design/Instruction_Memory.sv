@@ -14,9 +14,12 @@ module Instruction_Memory(
     output logic [31:0] RD      // 32-bit binary instruction
     );
     
-    logic [31:0] memory [100:0]; 
+    logic [31:0] memory [100:0];
     
     // Resize A to satisfiy when the address is increasing by "1"
+    // Last two bits of word address are always zero. Because RISC-V byte addressable.
     assign RD = memory[A[31:2]];
+    
+    initial $readmemh("SimpleTest.mem", memory);
     
 endmodule

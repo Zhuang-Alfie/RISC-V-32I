@@ -23,8 +23,11 @@ module Data_memory(
     
     //Synchronous write, synchronous read
     always_ff @(posedge clk) begin
-        if(WE) RAM[A[31:2]] <= WD;      //TODO: explaination
-                                        // Last two bits of word address are always zero. Because RISC-V byte addressable.
+        // Last two bits of word address are always zero. Because RISC-V byte addressable.
+        if(WE) RAM[A[31:2]] <= WD;
     end
+    
+    // Initial RAM memory with S-box table, permutation layer table, key, state
+    initial $readmemh("RAM_Memory.mem", RAM);
 
 endmodule

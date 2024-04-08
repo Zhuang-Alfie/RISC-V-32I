@@ -1,9 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+#include <chrono>
+using namespace std::chrono;
 
 // The S-box
-const uint8_t SBox[16] = {0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2};
+int SBox[16] = {0xC, 0x5, 0x6, 0xB, 0x9, 0x0, 0xA, 0xD, 0x3, 0xE, 0xF, 0x8, 0x4, 0x7, 0x1, 0x2};
 
 // The P-layer permutation
 const uint8_t PBox[64] = {
@@ -14,31 +16,27 @@ const uint8_t PBox[64] = {
 };
 
 // Key scheduling for PRESENT-80
-std::vector<uint64_t> keySchedule(uint64_t keyLower, uint16_t keyUpper) {
+std::vector<uint64_t> keySchedule(uint64_t keyUpper, uint16_t keyLower) {
     std::vector<uint64_t> roundKeys(32);
 
     for (int i = 0; i < 32; ++i) {
         // Take 64 bits for the round key
-        roundKeys[i] = keyLower;
-        std::cout << ": " << std::hex << keyLower << std::endl;
+        roundKeys[i] = keyUpper;
 
-
-
-        
+        // XOR round counter before shifted
+        uint64_t xorResult = static_cast<uint64_t>(((keyUpper >> 18) & 0x1f) ^ (i+1)) << 18;
+        keyUpper = (keyUpper & 0xFFFFFFFFFF83FFFF) | xorResult;
 
         // Key update
         // Rotate 61 bits to the left
-        uint64_t tempLower = keyLower;
-        uint16_t tempUpper = keyUpper;
-        keyLower = (tempLower << 61) | (static_cast<uint64_t>(tempUpper) << 45) | (tempLower >> 19);
-        keyUpper = (tempLower >> 3) & 0xFFFF;
+        uint64_t tempUpper = keyUpper;
+        uint16_t tempLower = keyLower;
+        keyUpper = (tempUpper << 61) | (tempUpper >> 19) | (static_cast<uint64_t>(tempLower) << 45);
+        keyLower = static_cast<uint16_t>((tempUpper >> 3) & 0xFFFF);
 
         // Apply S-box to the leftmost 4 bits of the key
-        uint8_t topNibble = (keyUpper >> 12) & 0xF;
-        keyUpper = (keyUpper & 0x0FFF) | (static_cast<uint16_t>(SBox[topNibble]) << 12);
-
-        // XOR round counter, ensure only the lower 5 bits of i are used
-        keyLower ^= static_cast<uint64_t>(i & 0x1F) << 59;
+        int topNibble = static_cast<int>((keyUpper >> 60) & 0xF);
+        keyUpper = (keyUpper & 0x0FFFFFFFFFFFFFFF) | (static_cast<uint64_t>(SBox[topNibble]) << 60);
     }
 
     return roundKeys;
@@ -73,17 +71,21 @@ uint64_t presentEncrypt(uint64_t plaintext, const std::vector<uint64_t>& roundKe
 }
 
 int main() {
-    uint64_t keyLower = 0xFFFFFFFFFFFFFFFF; // Lower 64 bits of the 80-bit key
-    uint16_t keyUpper = 0xFFFF;             // Upper 16 bits of the 80-bit key
-    uint64_t plaintext = 0x0000000000000000; // 64-bit plaintext
+    uint64_t keyUpper = 0x0;  // Lower 64 bits of the 80-bit key
+    uint16_t keyLower = 0x0;  // Upper 16 bits of the 80-bit key
+    uint64_t plaintext = 0x20051116; // 64-bit plaintext
+    // time_t start, end;
 
+    auto start = high_resolution_clock::now();
     // Generate round keys
-    std::vector<uint64_t> roundKeys = keySchedule(keyLower, keyUpper);
+    std::vector<uint64_t> roundKeys = keySchedule(keyUpper, keyLower);
 
     // Encrypt the plaintext
     uint64_t ciphertext = presentEncrypt(plaintext, roundKeys);
-
-    std::cout << "Ciphertext: " << std::hex << ciphertext << std::endl;
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    std::cout << duration.count()  << " microseconds"<< std::endl;
+    std::cout << "Ciphertext:: " << std::hex << ciphertext<< std::endl;
 
     return 0;
 }

@@ -8,8 +8,9 @@
 // Description: This module is the top level of all the modules.
 //////////////////////////////////////////////////////////////////////////////////
 
+(* DONT_TOUCH = "true|yes" *)   //Avoid synthesis optimizing circuit
 module Top(
-    input bit clk
+    (* keep = "true" *)input clk
 );
 
     wire [31:0] instr;
@@ -27,32 +28,32 @@ module Top(
     
     // Flip-flop generate next PC
     always @(posedge clk)
-        PC <= PC_next;
-    
+            PC <= PC_next;
+            
     initial begin
         constant_4 = 'b100;     // assign to constant = 4
         PC = 0;
     end
 
-    MUX_2to1 mux2_1 (
+    (* DONT_TOUCH = "true|yes" *)MUX_2to1 mux2_1 (//Avoid synthesis optimizing circuit
         .A(result_PC_plus4),
         .B(result_PC_target),
         .select(PC_src),
         .out(out_mux2_1)
     );
     
-    Instruction_Memory inst_memory(
+    (* DONT_TOUCH = "true|yes" *)Instruction_Memory inst_memory(//Avoid synthesis optimizing circuit
         .A(PC),
         .RD(instr)
     );
     
-    Adder PC_plus4 (
+    (* DONT_TOUCH = "true|yes" *)Adder PC_plus4 (//Avoid synthesis optimizing circuit
         .operand_a(PC),
         .operand_b(constant_4),
         .result(result_PC_plus4)
     );
 
-    Register_file reg_file(
+    (* DONT_TOUCH = "true|yes" *)Register_file reg_file(//Avoid synthesis optimizing circuit
         .A1(instr[19:15]),
         .A2(instr[24:20]),
         .A3(instr[11:7]),
@@ -63,7 +64,7 @@ module Top(
         .RD2(RD2)
     );
     
-    Control_Unit control_unit(
+    (* DONT_TOUCH = "true|yes" *)Control_Unit control_unit(//Avoid synthesis optimizing circuit
         .instr(instr),
         .zero(zero), 
         .PC_src(PC_src), 
@@ -75,20 +76,20 @@ module Top(
         .Result_src(Result_src)
     );
     
-    Extend extend (
+    (* DONT_TOUCH = "true|yes" *)Extend extend (//Avoid synthesis optimizing circuit
         .inst(instr),
         .Imm_src(Imm_src),
         .Imm_ext(Imm_ext)
     );
     
-    MUX_2to1 mux2_2 (
+    (* DONT_TOUCH = "true|yes" *)MUX_2to1 mux2_2 (//Avoid synthesis optimizing circuit
         .A(RD2),
         .B(Imm_ext),
         .select(ALU_src),
         .out(out)
     );
     
-    ALU alu (
+    (* DONT_TOUCH = "true|yes" *)ALU alu (//Avoid synthesis optimizing circuit
         .srcA(RD1),
         .srcB(out),
         .ALUControl(ALU_control),
@@ -96,13 +97,13 @@ module Top(
         .ALUResult(ALUResult)
     );
     
-    Adder PC_target (
+    (* DONT_TOUCH = "true|yes" *)Adder PC_target (//Avoid synthesis optimizing circuit
         .operand_a(Imm_ext),
         .operand_b(PC),
         .result(result_PC_target)
     );
     
-    Data_memory data_memory (
+    (* DONT_TOUCH = "true|yes" *)Data_memory data_memory (//Avoid synthesis optimizing circuit
         .A(ALUResult),
         .WD(RD2),
         .clk(clk),
@@ -110,7 +111,7 @@ module Top(
         .RD(RD_DM)
     );
     
-    MUX_3to1 mux3_1 (
+    (* DONT_TOUCH = "true|yes" *)MUX_3to1 mux3_1 (//Avoid synthesis optimizing circuit
         .ALU_result(ALUResult),
         .Read_data(RD_DM),
         .PC_plus4(result_PC_plus4),

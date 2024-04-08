@@ -33,12 +33,12 @@ module ALU_Decoder(
                                     2'b11 : ALU_control = 3'b001;                   // sub
                                     default : ALU_control = 3'bx;
                                  endcase
+                        3'b001 : ALU_control = 3'b100;          // sll
                         3'b010 : ALU_control = 3'b101;          // slt
+                        3'b100 : ALU_control = 3'b111;          // xor
+                        3'b101 : ALU_control = 3'b110;          // srl
                         3'b110 : ALU_control = 3'b011;          // or
                         3'b111 : ALU_control = 3'b010;          // and
-                        3'b101 : ALU_control = 3'b110;          // srl
-                        3'b001 : ALU_control = 3'b100;          // sll
-                        3'b100 : ALU_control = 3'b111;          // sll
                         default : ALU_control = 3'bx;
                     endcase
             default : ALU_control = 3'bx;

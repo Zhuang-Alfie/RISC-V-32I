@@ -1,96 +1,55 @@
-## addRoundKey ##
-# a2 - lower output key
-# a3 - upper output key
-
-# s2 - key[79:48]
-# s3 - key[47:32]
-# s4 - key[31: 0]
-# s5 - Counter, initial value(1)
-
-# t2 - shifted key[79:48]
-# t3 - shifted key[47:32]
-# t4 - shifted key[31: 0]
-
-## sBoxLayer ##
-# a0 - upper 16 bits plant text
-# a1 - lower 16 bits plant text
-# t0 - upper 16 bits encrypted text
-# t1 - lower 16 bits encrypted text
-
-# t2 - current nibble holder
-# t3 - total bits in a 16-bit register
-# t4 - bit counter
-# t6 - s-box base address 0x0
-
-## pLayer ##
-# t0 - upper 16 bits plant text
-# t1 - lower 16 bits plant text
-# a0 - upper 16 bits encrypted text
-# a1 - lower 16 bits encrypted text
-
-# t2 - current bit holder
-# t3 - total bits need to convert 	(64)
-# t4 - bit counter			(0-63)
-# t6 - pLayer RAM base address 17	(17)
-
-# a3 - current bit new location
-# a4 - temp address location
-# a5 - substractor 			(32)
-
-
 	0x00100a93	//addi s5, 1(zero)				# s5: Initial Constant (1)
 	0x02000793	//addi a5, zero, 32				# a5: constant value for substration with bit counter(32)
-	0x01f00813	//addi a6, zero, 31
-	0x14802903	//lw   s2, 328(zero)	`Loading Key		
-	0x14c02983	//lw   s3, 332(zero)				
-	0x15002a03	//lw   s4, 336(zero)	
-	0x04002503	//lw   a0, 64(zero)				****TEMP****Loading a0 to 0x1234123f
-	0x14402583	//lw   a1, 324(zero)				****TEMP****Loading a1 to 0x1234123f			
-	0x010a5613	//srli a2, s4, 16	`rearrang key
-	0x01099293	//slli t0, s3, 16
-	0x00566633	//or   a2, a2, t0
-	0x00c54533	//xor  a0, a0, a2	`xor			# a0 now contains the result of STATE_LO XOR KEY_LO
-	0x0125c5b3	//xor  a1, a1, s2				# a1 now contains the result of STATE_HI XOR KEY_HI
-	0x15584c63	//blt a6, s5, 344
-	0x00000293	//addi t0, zero, 0	`sBox			# t0: empty t0 prepare for ciphertext
+	0x01f00813	//addi a6, zero, 31				# a6: constant value for keySchedule total iteration(31)
+	0x04400b93    	//addi s7, zero, 68    	   			# s7: permutation base address(68)
+	0x14802903	//lw   s2, 328(zero)	`Loading Key		# s2: key[79-48]
+	0x14c02983	//lw   s3, 332(zero)				# s3: key[47-32]
+	0x15002a03	//lw   s4, 336(zero)				# s4: key[31-0]
+	0x04002503	//lw   a0, 64(zero)	`Loading PlantText	# a0: STATE_LO
+	0x14402583	//lw   a1, 324(zero)				# a1: STATE_HI
+	0x010a5613	//srli a2, s4, 16				# a2: s4[31:16]	-> s4[15:0]
+	0x01099293	//slli t0, s3, 16				# t0: s3[15:0] -> s3[31:16]
+	0x00566633	//or   a2, a2, t0				# a2: merge s4 and s3
+	0x00c54533	//xor  a0, a0, a2	`xor			# a0: the result of STATE_LO XOR KEY_LO
+	0x0125c5b3	//xor  a1, a1, s2				# a1: the result of STATE_HI XOR KEY_HI
+	0x15584c63	//blt  a6, s5, 344	`[Loop-3]		# Beginning of the whole cipher process
+	0x00000293	//addi t0, zero, 0				# t0: empty t0 prepare for ciphertext-------------------S-box
 	0x00000313	//addi t1, zero, 0				# t1: empty t1 prepare for ciphertext
 	0x01f00e13	//addi t3, zero, 31               		# t3: Maximum index of a register(31)
 	0x00000e93	//addi t4, zero, 0               		# t4: bit counter initialized to 0
-	0x00000f93	//addi t6, zero, 0    	   			# t6: s-box base address 0x0
 	0x03de4263	//blt  t3, t4, 32	`[Loop-0]		# Jump to the end if t3 < t4
 	0x01d553b3 	//srl  t2, a0, t4         			# t2: shift a0 to right to hold the new nibble
 	0x00f3f393 	//andi t2, t2, 0xF       			# t2: update t2 to isolate other nibbles
-	0x00239f93	//slli t6, t2, 2	`Apply S-box		# t6: multiply 4 for lw instruction
-	0x000fa383 	//lw   t2, 0(t6)           			# t2: S-box substitution for the current nibble
-	0x01d393b3	//sll  t2, t2, t4	`Store new nibble	# t2: shifted nibble to correspond position
+	0x00239393	//slli t2, t2, 2	`Apply S-box		# t6: multiply 4 for lw instruction
+	0x0003a383 	//lw   t2, 0(t2)           			# t2: S-box substitution for the current nibble
+	0x01d393b3	//sll  t2, t2, t4				# t2: shifted nibble to correspond position
 	0x0053e2b3	//or   t0, t2, t0				# t0: merge new nibble to current encryped text
 	0x004e8e93 	//addi t4, t4, 4         			# t4: Update the bit counter
-	0xfe1ff06f 	//jal  zero,-32       	`Jump to [loop-0]	# Jump back to continute new iteration	[loop-0]
+	0xfe1ff06f 	//jal  zero,-32       	`Jump to [loop-0]	# Jump back to continute new iteration
 	0x00000e93	//addi t4, zero, 0               		# t4: bit counter re-initialized to 0
 	0x03de4263	//blt  t3, t4, 36	`[Loop-1]		# Jump to the end if t3 < t4
 	0x01d5d3b3 	//srl  t2, a1, t4         			# t2: shift a1 to right to hold the new nibble
 	0x00f3f393 	//andi t2, t2, 0xF       			# t2: update t2 to isolate other nibbles
-	0x00239f93	//slli t6, t2, 2	`Apply S-box		# t6: multiply 4 for lw instruction
-	0x000fa383 	//lw   t2, 0(t6)           			# t2: S-box substitution for the current nibble
+	0x00239393	//slli t2, t2, 2				# t6: multiply 4 for lw instruction t6
+	0x0003a383 	//lw   t2, 0(t2)           			# t2: S-box substitution for the current nibble
 	0x01d393b3	//sll  t2, t2, t4	`Store new nibble	# t2: shifted nibble to correspond position
 	0x0063e333	//or   t1, t2, t1				# t0: merge new nibble to current encryped text
 	0x004e8e93 	//addi t4, t4, 4         			# t4: Update the bit counter
-	0xfe1ff06f 	//jal  zero,-32       	`Jump to [loop-1]	# Jump back to continute new iteration	[loop-0]
-	0x03f00e13	//addi t3, zero, 63      `pLayer  		# t3: Last bit index(63)
+	0xfe1ff06f 	//jal  zero,-32       	`Jump to [loop-1]	# Jump back to continute new iteration------------------S-box END
+	0x03f00e13	//addi t3, zero, 63				# t3: Last bit index(63)--------------------------------Permutation
 	0x00000e93    	//addi t4, zero, 0               		# t4: bit counter initialized to 0
-	0x04400f93    	//addi t6, zero, 68    	   			# t6: permutation base address(68)
 	0x00000693	//addi a3, zero, 0				# a3: current bit new location
 	0x00000513	//addi a0, zero, 0				# a0: empty a0 prepare for ciphertext
 	0x00000593	//addi a1, zero, 0				# a1: empty a1 prepare for ciphertext
-	0x05de4263	//blt  t3, t4, 68	`[Loop-2]		# Jump to the end if t3(64) < t4(0-64)	[Loop-1]
+	0x05de4263	//blt  t3, t4, 68	`[Loop-2]		# Jump to the end if t3(64) < t4(0-64)
 	0x00fec463	//blt  t4, a5, 8				# Skip next line if (t4 < a5(32))
 	0x00030293	//addi t0, t1, 0				# Update upper 32 bit plain text to t0
 	0x01d2d3b3 	//srl  t2, t0, t4         			# t2: shift t0 to right to holds new bit at LSB
 	0x0013f393 	//andi t2, t2, 0x1       			# t2: update t2 isolate the other bits
-	0x002e9713	//slli a4, t4, 2	`Apply p-layer		# a4: multiply 4 with t4 for lw instruction
-	0x01f70733	//add  a4, a4, t6				# a4: add a4 with base address t6
+	0x002e9713	//slli a4, t4, 2				# a4: multiply 4 with t4 for lw instruction
+	0x01770733	//add  a4, a4, s7				# a4: add a4 with base address s7
 	0x00072683 	//lw   a3, 0(a4)           			# a3: p-layer substitution for the location of current bit
-	0x00f6ca63	//blt  a3, a5, 20	`Store new bit		# check new location in range(32 - 63)
+	0x00f6ca63	//blt  a3, a5, 20				# check new location in range(32 - 63)
 	0x40f686b3	//sub  a3, a3, a5	`IF Range(32 - 63)	# a3: substrat 32 bit in a3
 	0x00d393b3	//sll  t2, t2, a3				# t2: shifted nibble to correspond position in a1
 	0x00b3e5b3	//or   a1, t2, a1				# t0: merge new nibble to current encryped text
@@ -98,8 +57,8 @@
 	0x00d393b3	//sll  t2, t2, a3	`IF Range(0 - 31)	# t2: shifted nibble to correspond position in a0
 	0x00a3e533	//or   a0, t2, a0				# t0: merge new nibble to current encryped text
 	0x001e8e93 	//addi t4, t4, 1         			# t4: Update the bit counter
-	0xfc1ff06f 	//jal  zero,-64       	`Jump to [loop-2]	# Jump back to continute new iteration	[loop-1]
-	0x00da1393	//slli t2, s4, 13	`t2 [loop-3]		# t2: shift s4 to left 13 bits
+	0xfc1ff06f 	//jal  zero,-64       	`Jump to [loop-2]	# Jump back to continute new iteration------------------Permutation END
+	0x00da1393	//slli t2, s4, 13	`Shifted t2		# t2: shift s4 to left 13 bits--------------------------KeySchedule
 	0x01395293	//srli t0, s2, 19				# t0: shift s2 to right 19 bits
 	0x0072e3b3	//or   t2, t0, t2				# t2: merge t0 and t2 to t2
 	0x0029d293	//srli t0, s3, 2	`Apply XOR		# t0: shigt s3 to right 2 bits
@@ -108,13 +67,13 @@
 	0x00229293	//slli t0, t0, 2				# t0: re-arrange t0 to left 2 bits
 	0xf839f993	//andi s3, s3, 0xFF83				# S3: clear bit[6:0] prepare for updating
 	0x0059e9b3	//or   s3, s3, t0				# S3: update S3 with result of XOR
-	0x00395293	//srli t0, s2, 3	`t3			# t0: shift s2 to right 2 bits
+	0x00395293	//srli t0, s2, 3	`Shifted t3		# t0: shift s2 to right 2 bits
 	0x0ff2fe13	//andi t3, t0, 0xff				# t3: save bit 7 - 0 from t0
 	0x0082d293	//srli t0, t0, 8				# t0: shift t0 to right 8 bits
 	0x0ff2f293	//andi t0, t0, 0xff				# t0: save bit 7 - 0 from t0
 	0x00829293	//slli t0, t0, 8				# t0: shift t0 to right 8 bits
 	0x01c28e33	//add  t3, t0, t3				# t3: merge t0 and t3 to t2
-	0x00797e93	//andi t4, s2, 7	`t4			# t4: save bit 2 - 0 ftom s2
+	0x00797e93	//andi t4, s2, 7	`Shifted t4		# t4: save bit 2 - 0 ftom s2
 	0x01de9e93	//slli t4, t4, 29				# t4: shift t4 to left 29 bits
 	0x0ff9f293	//andi t0, s3, 0xff				# t0: save bit 7 - 0 from s3
 	0x0089d313	//srli t1, s3, 8				# t1: shift s3 left 8 bits
@@ -127,14 +86,12 @@
 	0x01d2eeb3	//or   t4, t0, t4				# t4: merge t0 and t4
 	0x01a3d293	//srli t0, t2, 26	`Apply S-box		# t0: move t2[31:28] to t2[5:2]
 	0x0002a283	//lw   t0, 0(t0)           			# t0: S-box with t0 and save in t0
-	0x00439393	//slli t2, t2, 4	`Clean t2[31:28]	# t2: shift t2 to left 4 bits
+	0x00439393	//slli t2, t2, 4				# t2: shift t2 to left 4 bits
 	0x0043d393	//srli t2, t2, 4				# t2: shift t2 to right 5 bits
 	0x01c29293	//slli t0, t0, 28				# t0: re-arrange t0 to most left
 	0x0053e3b3	//or   t2, t2, t0				# t2: merge t2 and to to t2
-	0x00038933	//add s2, t2, zero	`Update s2-4		# s2: update s2 from t2
-	0x000e09b3	//add s3, t3, zero				# s3: update s3 from t3
-	0x000e8a33	//add s4, t4, zero				# s4: update s4 from t4
-	0x001a8a93	//addi s5, s5, 1	`Incrase s5		# s5: increase s5 with 1
-	0xe9dff06f	//jal zero, -356	`Jump[loop-3]		# Jump back to continute new iteration	[loop-3]
-
-
+	0x00038933	//add  s2, t2, zero				# s2: update s2 from t2
+	0x000e09b3	//add  s3, t3, zero				# s3: update s3 from t3
+	0x000e8a33	//add  s4, t4, zero				# s4: update s4 from t4
+	0x001a8a93	//addi s5, s5, 1				# s5: increase s5 with 1
+	0xea5ff06f	//jal  zero, -348	`Jump[loop-3]		# Jump back to continute new iteration------------------KeySchedule END

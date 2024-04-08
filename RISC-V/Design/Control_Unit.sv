@@ -28,8 +28,6 @@ module Control_Unit(
     wire branch;
     wire jump;
     
-//    assign PC_src = (zero & branch) | jump;
-    
     always_comb
         case(instr[14:12])
             3'b100 : PC_src = (!zero & branch) | jump;
